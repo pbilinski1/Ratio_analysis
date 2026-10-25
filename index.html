@@ -89,8 +89,7 @@ function render(){
 }
 [metricSelX,metricSelY,dateSel].forEach(el=>el.addEventListener('change',render));document.getElementById('swap').onclick=()=>{const a=metricSelX.value;metricSelX.value=metricSelY.value;metricSelY.value=a;render()};
 document.getElementById('allBtn').onclick=()=>{active.clear();industries.forEach(x=>active.add(x));list.querySelectorAll('input').forEach(x=>x.checked=true);render()};document.getElementById('noneBtn').onclick=()=>{active.clear();list.querySelectorAll('input').forEach(x=>x.checked=false);render()};
-document.getElementById('csvBtn').onclick=()=>{const xm=metrics[+metricSelX.value],ym=metrics[+metricSelY.value],pts=current();const esc=v=>'"'+String(v??'').replaceAll('"','""')+'"';const csv=[['Date','Industry','Firms',xm.label,ym.label].map(esc).join(','),...pts.map(p=>[p.date,p.industry,p.firms,p.x,p.y].map(esc).join(','))].join('
-');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='industry-ratios.csv';a.click();URL.revokeObjectURL(a.href)};
+document.getElementById('csvBtn').onclick=()=>{const xm=metrics[+metricSelX.value],ym=metrics[+metricSelY.value],pts=current();const esc=v=>'"'+String(v??'').replaceAll('"','""')+'"';const csv=[['Date','Industry','Firms',xm.label,ym.label].map(esc).join(','),...pts.map(p=>[p.date,p.industry,p.firms,p.x,p.y].map(esc).join(','))].join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='industry-ratios.csv';a.click();URL.revokeObjectURL(a.href)};
 document.getElementById('svgBtn').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([svg.outerHTML],{type:'image/svg+xml'}));a.download='industry-ratio-scatter.svg';a.click();URL.revokeObjectURL(a.href)};
 render();
 </script>

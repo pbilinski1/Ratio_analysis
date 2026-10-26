@@ -50,7 +50,7 @@ select{width:100%;height:42px;border:1px solid #d8dfd7;border-radius:8px;backgro
         <div class="swap-row"><button class="swap-btn" id="swap">⇄ &nbsp; Swap axes</button></div>
         <div class="field"><div class="field-label"><span class="axis-chip y">Y</span>Vertical axis</div><select id="yMetric"></select><div class="supplied">Supplied industry median</div></div>
         <div class="field"><div class="field-label">Average period</div><div class="date-row"><button class="icon-btn" id="prevPeriod">‹</button><select id="periodSel"></select><button class="icon-btn" id="nextPeriod">›</button></div><div class="supplied">Average of monthly industry values within each period</div></div>
-        <div class="preset-title">A place to start</div><div class="presets"><button class="preset active">↗ &nbsp; Profit & efficiency</button><button class="preset">◇ &nbsp; Liquidity</button><button class="preset">⊙ &nbsp; Returns</button><button class="preset">▣ &nbsp; Valuation</button></div>
+        <div class="preset-title">A place to start</div><div class="presets"><button class="preset active" data-preset="profit">↗ &nbsp; Profit & efficiency</button><button class="preset" data-preset="liquidity">◇ &nbsp; Liquidity</button><button class="preset" data-preset="returns">⊙ &nbsp; Returns</button><button class="preset" data-preset="valuation">▣ &nbsp; Valuation</button></div>
         <div class="reset"><span>Reset comparison</span><button class="swap-btn" id="resetBtn">↻</button></div>
       </div>
       <div class="card panel">
@@ -156,6 +156,13 @@ function render(){
 [metricSelX,metricSelY,periodSel,document.getElementById('labelsToggle'),document.getElementById('medianToggle')].forEach(el=>el.addEventListener('change',render));
 document.getElementById('swap').onclick=()=>{const a=metricSelX.value;metricSelX.value=metricSelY.value;metricSelY.value=a;render()};
 document.getElementById('resetBtn').onclick=()=>{metricSelX.value=(exactMetric('Asset Turnover')||baseMetrics[1]).key;metricSelY.value=(exactMetric('Gross Profit Margin')||baseMetrics[2]).key;periodSel.value=String(periods.length-1);active.clear();industries.forEach(x=>active.add(x));list.querySelectorAll('input').forEach(x=>x.checked=true);render()};
+const PRESETS={
+  profit:['Asset Turnover','Gross Profit Margin'],
+  liquidity:['Current Ratio','Quick Ratio (Acid Test)'],
+  returns:['Return on Assets','Return on Equity'],
+  valuation:['Price/Book','P/E (Diluted, Excl. EI)']
+};
+document.querySelectorAll('.preset[data-preset]').forEach(btn=>{btn.addEventListener('click',()=>{const pair=PRESETS[btn.dataset.preset];if(!pair)return;const xm=exactMetric(pair[0]),ym=exactMetric(pair[1]);if(!xm||!ym)return;metricSelX.value=String(xm.key);metricSelY.value=String(ym.key);document.querySelectorAll('.preset[data-preset]').forEach(b=>b.classList.toggle('active',b===btn));render()})});
 document.getElementById('prevPeriod').onclick=()=>{const i=+periodSel.value;if(i>0){periodSel.value=String(i-1);render()}};document.getElementById('nextPeriod').onclick=()=>{const i=+periodSel.value;if(i<periods.length-1){periodSel.value=String(i+1);render()}};
 document.getElementById('allBtn').onclick=()=>{active.clear();industries.forEach(x=>active.add(x));list.querySelectorAll('input').forEach(x=>x.checked=true);render()};document.getElementById('noneBtn').onclick=()=>{active.clear();list.querySelectorAll('input').forEach(x=>x.checked=false);render()};
 document.getElementById('scatterTab').onclick=()=>{document.getElementById('chartPane').style.display='block';document.getElementById('tablePane').style.display='none';document.getElementById('scatterTab').classList.add('active');document.getElementById('tableTab').classList.remove('active')};document.getElementById('tableTab').onclick=()=>{document.getElementById('chartPane').style.display='none';document.getElementById('tablePane').style.display='block';document.getElementById('tableTab').classList.add('active');document.getElementById('scatterTab').classList.remove('active')};
